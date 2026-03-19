@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package payment;
+
+option go_package = "payment/pb/v1";
+
+message CreateOrderRequest {
+    int64 user_id = 1;
+    repeated Item items = 2;
+    float total_price = 3;
+}
+
+message Order {
+  string id = 1;
+  string user_id = 2;
+  repeated Item items = 3;
+  double total = 4;
+}
+
+message Item {
+  string product_id = 1;
+  int32 quantity = 2;
+  double price = 3;
+}
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (Order) {}
+}

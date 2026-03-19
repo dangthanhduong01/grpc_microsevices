@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package shipping;
+
+option go_package = "shipping/pb/v1";
+
+message CreateShippingRequest {
+    string order_id = 1;
+    string address = 2;
+}
+
+message CreateShippingResponse {
+    string tracking_id = 1;
+    string status = 2;
+}
+
+service Shipping {
+    rpc Create(CreateShippingRequest) returns (CreateShippingResponse);
+}
