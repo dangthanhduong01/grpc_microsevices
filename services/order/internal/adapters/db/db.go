@@ -2,9 +2,9 @@ package db
 
 import (
 	"fmt"
-	"payment/services/order/internal/applications/core/domain"
+	"services/order/internal/applications/core/domain"
 
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +20,7 @@ type OrderItem struct {
 	ProductCode string
 	UnitPrice   float32
 	OrderID     uint
-	Quantity    int
+	Quantity    int32
 }
 
 type Adapter struct {
@@ -28,7 +28,7 @@ type Adapter struct {
 }
 
 func NewAdapter(dataSourceURL string) (*Adapter, error) {
-	db, openErr := gorm.Open(mysql.Open(dataSourceURL), &gorm.Config{})
+	db, openErr := gorm.Open(postgres.Open(dataSourceURL), &gorm.Config{})
 	if openErr != nil {
 		return nil, fmt.Errorf("db connection error: %v", openErr)
 	}
@@ -46,7 +46,7 @@ func (a Adapter) Get(id string) (domain.Order, error) {
 	for _, orderItem := range orderEntity.OrderItems {
 		orderItems = append(orderItems, domain.OrderItem{
 			ProductCode: orderItem.ProductCode,
-			UnitPrice:   int(orderItem.UnitPrice),
+			UnitPrice:   orderItem.UnitPrice,
 			Quantity:    orderItem.Quantity,
 		})
 	}

@@ -1,6 +1,6 @@
 package ports
 
-import "payment/services/order/internal/applications/core/domain"
+import "services/order/internal/applications/core/domain"
 
 type DBPort interface {
 	Get(id string) (domain.Order, error)

@@ -2,17 +2,18 @@ syntax = "proto3";
 
 package payment;
 
-option go_package = "payment/pb/v1";
+option go_package = "payment/internal/pb";
 
 message CreatePaymentRequest {
-    string order_id = 1;
-    double amount = 2;
-    string payment_method = 3;
+    int64 user_id = 1;
+    int64 order_id = 2;
+    float total_price = 3;
+    int64 payment_method = 4;
 }
 
 message CreatePaymentResponse {
-    string payment_id = 1;
-    string status = 2;
+    int64 payment_id = 1;
+    int64 bill_id = 2;
 }
 
 service Payment {
