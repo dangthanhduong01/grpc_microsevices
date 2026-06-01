@@ -1,0 +1,262 @@
+basePath: /api/v1
+definitions:
+  auth.CreateUserResponse:
+    properties:
+      user:
+        $ref: '#/definitions/auth.User'
+    type: object
+  auth.LoginUserResponse:
+    properties:
+      access_token:
+        type: string
+      access_token_expiry:
+        $ref: '#/definitions/timestamppb.Timestamp'
+      refresh_token:
+        type: string
+      refresh_token_expiry:
+        $ref: '#/definitions/timestamppb.Timestamp'
+      session_id:
+        type: string
+      user:
+        $ref: '#/definitions/auth.User'
+    type: object
+  auth.UpdateUserResponse:
+    properties:
+      user:
+        $ref: '#/definitions/auth.User'
+    type: object
+  auth.User:
+    properties:
+      created_at:
+        $ref: '#/definitions/timestamppb.Timestamp'
+      email:
+        type: string
+      id:
+        type: string
+      updated_at:
+        $ref: '#/definitions/timestamppb.Timestamp'
+      username:
+        type: string
+    type: object
+  gateway_internal_adapters_http.CreateOrderRequest:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/gateway_internal_adapters_http.Item'
+        minItems: 1
+        type: array
+      total_price:
+        type: number
+      user_id:
+        type: integer
+    required:
+    - items
+    - total_price
+    - user_id
+    type: object
+  gateway_internal_adapters_http.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  gateway_internal_adapters_http.Item:
+    properties:
+      product_id:
+        type: string
+      quantity:
+        minimum: 1
+        type: integer
+      unit_price:
+        type: number
+    required:
+    - product_id
+    - quantity
+    - unit_price
+    type: object
+  gateway_internal_adapters_http.LoginUserRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  gateway_internal_adapters_http.RegisterUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  gateway_internal_adapters_http.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+    required:
+    - id
+    type: object
+  order.CreateOrderResponse:
+    properties:
+      message:
+        type: string
+      order_id:
+        type: integer
+    type: object
+  timestamppb.Timestamp:
+    properties:
+      nanos:
+        description: |-
+          Non-negative fractions of a second at nanosecond resolution. This field is
+          the nanosecond portion of the duration, not an alternative to seconds.
+          Negative second values with fractions must still have non-negative nanos
+          values that count forward in time. Must be between 0 and 999,999,999
+          inclusive.
+        type: integer
+      seconds:
+        description: |-
+          Represents seconds of UTC time since Unix epoch 1970-01-01T00:00:00Z. Must
+          be between -315576000000 and 315576000000 inclusive (which corresponds to
+          0001-01-01T00:00:00Z to 9999-12-31T23:59:59Z).
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.example.com/support
+  description: API documentation for the Gateway service
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Gateway API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT tokens
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gateway_internal_adapters_http.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginUserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gateway_internal_adapters_http.ErrorResponse'
+      summary: User login
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: User registration request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gateway_internal_adapters_http.RegisterUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.CreateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gateway_internal_adapters_http.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gateway_internal_adapters_http.ErrorResponse'
+      summary: Register a new user
+      tags:
+      - auth
+  /orders:
+    post:
+      consumes:
+      - application/json
+      description: Create a new order
+      parameters:
+      - description: Order request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gateway_internal_adapters_http.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/order.CreateOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gateway_internal_adapters_http.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a new order
+      tags:
+      - orders
+  /users/profile:
+    put:
+      consumes:
+      - application/json
+      description: Update user profile information
+      parameters:
+      - description: Update profile request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gateway_internal_adapters_http.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.UpdateUserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gateway_internal_adapters_http.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user profile
+      tags:
+      - users
+swagger: "2.0"
